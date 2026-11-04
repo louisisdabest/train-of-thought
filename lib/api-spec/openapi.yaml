@@ -10,6 +10,14 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: thoughts
+    description: Rough learning notes and review scheduling
+  - name: thought-links
+    description: Directed connections between thoughts in a daily thought map
+  - name: categories
+    description: Thought categories
+  - name: journal
+    description: Daily and monthly learning summaries
 paths:
   /healthz:
     get:
@@ -24,7 +32,304 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /thoughts:
+    get:
+      operationId: listThoughts
+      tags: [thoughts]
+      summary: List thoughts
+      parameters:
+        - name: date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: timezoneOffsetMinutes
+          in: query
+          required: false
+          description: Browser timezone offset in minutes from UTC
+          schema:
+            type: integer
+            minimum: -840
+            maximum: 840
+        - name: categoryId
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: reviewDue
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Matching thoughts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Thought"
+    post:
+      operationId: createThought
+      tags: [thoughts]
+      summary: Capture a thought
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ThoughtInput"
+      responses:
+        "201":
+          description: Thought created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Thought"
+  /thoughts/{id}:
+    get:
+      operationId: getThought
+      tags: [thoughts]
+      summary: Get one thought
+      parameters:
+        - $ref: "#/components/parameters/ThoughtId"
+      responses:
+        "200":
+          description: Thought details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Thought"
+        "404":
+          description: Thought not found
+    patch:
+      operationId: updateThought
+      tags: [thoughts]
+      summary: Update a thought
+      parameters:
+        - $ref: "#/components/parameters/ThoughtId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ThoughtUpdate"
+      responses:
+        "200":
+          description: Thought updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Thought"
+        "404":
+          description: Thought not found
+    delete:
+      operationId: deleteThought
+      tags: [thoughts]
+      summary: Delete a thought
+      parameters:
+        - $ref: "#/components/parameters/ThoughtId"
+      responses:
+        "204":
+          description: Thought deleted
+        "404":
+          description: Thought not found
+  /thoughts/{id}/review:
+    post:
+      operationId: reviewThought
+      tags: [thoughts]
+      summary: Mark reviewed and optionally schedule next review
+      parameters:
+        - $ref: "#/components/parameters/ThoughtId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReviewInput"
+      responses:
+        "200":
+          description: Review recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Thought"
+        "404":
+          description: Thought not found
+  /thought-links:
+    get:
+      operationId: listThoughtLinks
+      tags: [thought-links]
+      summary: List connections for a day
+      parameters:
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: timezoneOffsetMinutes
+          in: query
+          required: false
+          description: Browser timezone offset in minutes from UTC
+          schema:
+            type: integer
+            minimum: -840
+            maximum: 840
+      responses:
+        "200":
+          description: Connections between thoughts on that day
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ThoughtLink"
+    post:
+      operationId: createThoughtLink
+      tags: [thought-links]
+      summary: Connect two thought blocks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ThoughtLinkInput"
+      responses:
+        "201":
+          description: Connection created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ThoughtLink"
+        "400":
+          description: Invalid connection
+        "404":
+          description: Thought not found
+        "409":
+          description: Connection already exists
+  /thought-links/{id}:
+    delete:
+      operationId: deleteThoughtLink
+      tags: [thought-links]
+      summary: Remove a connection
+      parameters:
+        - $ref: "#/components/parameters/ThoughtLinkId"
+      responses:
+        "204":
+          description: Connection deleted
+        "404":
+          description: Connection not found
+  /categories:
+    get:
+      operationId: listCategories
+      tags: [categories]
+      summary: List categories
+      responses:
+        "200":
+          description: Categories in use
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Category"
+    post:
+      operationId: createCategory
+      tags: [categories]
+      summary: Create a category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategoryInput"
+      responses:
+        "201":
+          description: Category created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        "409":
+          description: Category already exists
+  /journal/summary:
+    get:
+      operationId: getJournalSummary
+      tags: [journal]
+      summary: Summarize one journal day
+      parameters:
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: timezoneOffsetMinutes
+          in: query
+          required: false
+          description: Browser timezone offset in minutes from UTC
+          schema:
+            type: integer
+            minimum: -840
+            maximum: 840
+      responses:
+        "200":
+          description: Day summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JournalSummary"
+  /journal/days:
+    get:
+      operationId: listJournalDays
+      tags: [journal]
+      summary: List days with notes for a month
+      parameters:
+        - name: month
+          in: query
+          required: true
+          schema:
+            type: string
+            pattern: "^\\d{4}-\\d{2}$"
+        - name: timezoneOffsetMinutes
+          in: query
+          required: false
+          description: Browser timezone offset in minutes from UTC
+          schema:
+            type: integer
+            minimum: -840
+            maximum: 840
+      responses:
+        "200":
+          description: Days with thought counts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/JournalDay"
 components:
+  parameters:
+    ThoughtId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    ThoughtLinkId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
   schemas:
     HealthStatus:
       type: object
@@ -33,4 +338,139 @@ components:
           type: string
       required:
         - status
+    Thought:
+      type: object
+      properties:
+        id:
+          type: integer
+        content:
+          type: string
+        categoryId:
+          type: ["integer", "null"]
+        categoryName:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        reviewAt:
+          type: ["string", "null"]
+          format: date-time
+        reviewedAt:
+          type: ["string", "null"]
+          format: date-time
+      required: [id, content, categoryId, categoryName, createdAt, updatedAt, reviewAt, reviewedAt]
+    ThoughtInput:
+      type: object
+      properties:
+        content:
+          type: string
+          minLength: 1
+        categoryId:
+          type: ["integer", "null"]
+        reviewAt:
+          type: ["string", "null"]
+          format: date-time
+      required: [content]
+    ThoughtUpdate:
+      type: object
+      properties:
+        content:
+          type: string
+          minLength: 1
+        categoryId:
+          type: ["integer", "null"]
+        reviewAt:
+          type: ["string", "null"]
+          format: date-time
+    ThoughtLink:
+      type: object
+      properties:
+        id:
+          type: integer
+        sourceThoughtId:
+          type: integer
+        targetThoughtId:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, sourceThoughtId, targetThoughtId, createdAt]
+    ThoughtLinkInput:
+      type: object
+      properties:
+        sourceThoughtId:
+          type: integer
+          minimum: 1
+        targetThoughtId:
+          type: integer
+          minimum: 1
+        timezoneOffsetMinutes:
+          type: integer
+          minimum: -840
+          maximum: 840
+      required: [sourceThoughtId, targetThoughtId, timezoneOffsetMinutes]
+    ReviewInput:
+      type: object
+      properties:
+        nextReviewAt:
+          type: ["string", "null"]
+          format: date-time
+      required: [nextReviewAt]
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        thoughtCount:
+          type: integer
+      required: [id, name, thoughtCount]
+    CategoryInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 40
+      required: [name]
+    JournalSummary:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        thoughtCount:
+          type: integer
+        reviewedCount:
+          type: integer
+        dueCount:
+          type: integer
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/CategorySummary"
+      required: [date, thoughtCount, reviewedCount, dueCount, categories]
+    CategorySummary:
+      type: object
+      properties:
+        categoryId:
+          type: integer
+        categoryName:
+          type: string
+        thoughtCount:
+          type: integer
+      required: [categoryId, categoryName, thoughtCount]
+    JournalDay:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        thoughtCount:
+          type: integer
+      required: [date, thoughtCount]
 

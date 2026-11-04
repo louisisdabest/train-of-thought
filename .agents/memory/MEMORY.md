@@ -1,0 +1,1 @@
+- [Vite artifact build environment](vite-artifact-build.md) — direct production builds need both artifact runtime variables set.

@@ -1,6 +1,6 @@
-# [Project name]
+# Fieldnotes
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A visual thinking space for capturing individual ideas, connecting them into directed paths and branches for a day, and revisiting them later.
 
 ## Run & Operate
 
@@ -22,15 +22,23 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/thought-journal/src/App.tsx` — daily thought map, review queue, and archive screens
+- `artifacts/api-server/src/routes/thoughts.ts` — thought, category, and daily summary endpoints
+- `artifacts/api-server/src/routes/thought-links.ts` — directed connections between thought blocks
+- `lib/db/src/schema/thoughts.ts` — thought, category, and connection data model
+- `lib/api-spec/openapi.yaml` — API contract and generated client/schema source
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Each browser gets a signed anonymous thought-map session; ideas, links, and categories are isolated per browser. There is no account-based cross-device sync yet.
+- Calendar requests include the browser's timezone offset so day filters follow the user's local calendar.
+- OpenAPI is the source of truth for backend validation and generated frontend hooks.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- Capture freeform idea blocks without requiring a title.
+- Connect blocks into directed paths and branches for each day.
+- Create categories, schedule reviews, and reopen prior daily thought maps.
 
 ## User preferences
 

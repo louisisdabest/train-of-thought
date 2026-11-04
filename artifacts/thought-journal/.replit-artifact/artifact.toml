@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Fieldnotes"
+description = "A visual thinking space for scholars, researchers, and students to capture individual ideas, connect them into daily thought maps, and revisit them later."
+version = "1.0.0"
+id = "artifacts/thought-journal"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25354
+
+[services.development]
+run = "pnpm --filter @workspace/thought-journal run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/thought-journal", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/thought-journal/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25354"
+BASE_PATH = "/"
