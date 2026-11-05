@@ -32,19 +32,19 @@
   },
   "rewrites": [
     {
-      "source": "/api/(.*)",
+      "source": "/api/:path*",
       "destination": {
         "service": "api-server"
       }
     },
     {
-      "source": "/sandbox/(.*)",
+      "source": "/sandbox/:path*",
       "destination": {
         "service": "mockup-sandbox"
       }
     },
     {
-      "source": "/(.*)",
+      "source": "/:path*",
       "destination": {
         "service": "thought-journal"
       }
