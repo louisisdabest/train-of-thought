@@ -1,0 +1,53 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "api-server": {
+      "root": "artifacts/api-server",
+      "framework": "express"
+    },
+    "mockup-sandbox": {
+      "root": "artifacts/mockup-sandbox",
+      "framework": "vite",
+      "bindings": [
+        {
+          "type": "service",
+          "service": "api-server",
+          "format": "url",
+          "env": "API_SERVER_URL"
+        }
+      ]
+    },
+    "thought-journal": {
+      "root": "artifacts/thought-journal",
+      "framework": "vite",
+      "bindings": [
+        {
+          "type": "service",
+          "service": "api-server",
+          "format": "url",
+          "env": "API_SERVER_URL"
+        }
+      ]
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": {
+        "service": "api-server"
+      }
+    },
+    {
+      "source": "/sandbox/(.*)",
+      "destination": {
+        "service": "mockup-sandbox"
+      }
+    },
+    {
+      "source": "/(.*)",
+      "destination": {
+        "service": "thought-journal"
+      }
+    }
+  ]
+}
