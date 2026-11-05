@@ -8,6 +8,7 @@
     "mockup-sandbox": {
       "root": "artifacts/mockup-sandbox",
       "framework": "vite",
+      "outputDirectory": "dist",
       "bindings": [
         {
           "type": "service",
@@ -20,6 +21,7 @@
     "thought-journal": {
       "root": "artifacts/thought-journal",
       "framework": "vite",
+      "outputDirectory": "dist",
       "bindings": [
         {
           "type": "service",
@@ -32,19 +34,19 @@
   },
   "rewrites": [
     {
-      "source": "/api/:path*",
+      "source": "/api/(.*)",
       "destination": {
         "service": "api-server"
       }
     },
     {
-      "source": "/sandbox/:path*",
+      "source": "/sandbox/(.*)",
       "destination": {
         "service": "mockup-sandbox"
       }
     },
     {
-      "source": "/:path*",
+      "source": "/(.*)",
       "destination": {
         "service": "thought-journal"
       }
