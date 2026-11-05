@@ -10,6 +10,7 @@
   },
   "private": true,
   "dependencies": {
+    "@radix-ui/react-tooltip": "^1.4.1",
     "@replit/connectors-sdk": "^0.4.3"
   },
   "devDependencies": {
