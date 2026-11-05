@@ -8,6 +8,7 @@
     "mockup-sandbox": {
       "root": "artifacts/mockup-sandbox",
       "framework": "vite",
+      "buildCommand": "pnpm run build",
       "outputDirectory": "dist",
       "bindings": [
         {
@@ -21,6 +22,7 @@
     "thought-journal": {
       "root": "artifacts/thought-journal",
       "framework": "vite",
+      "buildCommand": "pnpm run build",
       "outputDirectory": "dist",
       "bindings": [
         {
